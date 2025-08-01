@@ -1,4 +1,4 @@
-package ru.nvgsoft.mynotes.ui.theme
+package ru.nvgsoft.mynotes.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build
