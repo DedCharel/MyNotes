@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.update
 import ru.nvgsoft.mynotes.domain.Note
 import ru.nvgsoft.mynotes.domain.NotesRepository
 
-class TestNotesRepositoryImpl : NotesRepository {
+object TestNotesRepositoryImpl : NotesRepository {
 
     private val notesListFlow = MutableStateFlow<List<Note>>(listOf())
 
