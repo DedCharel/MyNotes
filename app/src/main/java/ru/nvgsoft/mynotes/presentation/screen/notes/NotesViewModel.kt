@@ -1,4 +1,4 @@
-package ru.nvgsoft.mynotes.presentation.screen.note
+package ru.nvgsoft.mynotes.presentation.screen.notes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
