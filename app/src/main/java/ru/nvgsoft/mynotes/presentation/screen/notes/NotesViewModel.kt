@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import ru.nvgsoft.mynotes.data.TestNotesRepositoryImpl
 import ru.nvgsoft.mynotes.domain.AddNoteUseCase
 import ru.nvgsoft.mynotes.domain.DeleteNoteUseCase
@@ -57,32 +58,39 @@ class NotesViewModel : ViewModel() {
     }
 
     //TODO : don't forget to remove it
+
     private fun addSomeNotes(){
-        repeat(50){
-            addNoteUseCase(title = "Title №$it", content = "Content №$it")
+        viewModelScope.launch {
+            repeat(50){
+                addNoteUseCase(title = "Title №$it", content = "Content №$it")
+            }
         }
+
     }
 
     fun processCommand(command: NotesCommand) {
-        when (command) {
-            is NotesCommand.DeleteNode -> {
-                deleteNoteUseCase(command.noteId)
-            }
+        viewModelScope.launch {
+            when (command) {
+                is NotesCommand.DeleteNode -> {
+                    deleteNoteUseCase(command.noteId)
+                }
 
-            is NotesCommand.EditNote -> {
-                val note = getNoteUseCase(command.note.id) // for testing UseCase
-                val title = note.title
-                editNoteUseCase(note.copy(title = " $title EDITED"))
-            }
+                is NotesCommand.EditNote -> {
+                    val note = getNoteUseCase(command.note.id) // for testing UseCase
+                    val title = note.title
+                    editNoteUseCase(note.copy(title = " $title EDITED"))
+                }
 
-            is NotesCommand.InputSearchQuery -> {
-                query.update { command.query.trim() }
-            }
+                is NotesCommand.InputSearchQuery -> {
+                    query.update { command.query.trim() }
+                }
 
-            is NotesCommand.SwitchPinnedStatus -> {
-                switchPinnedStatusUseCase(command.noteId)
+                is NotesCommand.SwitchPinnedStatus -> {
+                    switchPinnedStatusUseCase(command.noteId)
+                }
             }
         }
+
     }
 }
 
