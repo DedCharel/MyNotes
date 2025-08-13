@@ -30,12 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.nvgsoft.mynotes.domain.Note
 import ru.nvgsoft.mynotes.presentation.ui.theme.OtherNotesColors
 import ru.nvgsoft.mynotes.presentation.ui.theme.PinnedNotesColors
+import ru.nvgsoft.mynotes.presentation.utils.DateFormatter
 
 @Composable
 fun NotesScreen(
@@ -244,11 +246,13 @@ private fun NoteCard(
         Text(
             text = note.title,
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = note.updatedAt.toString(),
+            text = DateFormatter.formatDateToString(note.updatedAt),
             fontSize = 12.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -257,7 +261,9 @@ private fun NoteCard(
             text = note.content,
             fontSize = 16.sp,
             color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
         )
     }
 
