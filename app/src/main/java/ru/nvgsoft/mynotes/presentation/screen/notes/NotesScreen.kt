@@ -60,7 +60,7 @@ fun NotesScreen(
             FloatingActionButton(
                 onClick = onAddNoteClick,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                containerColor = MaterialTheme.colorScheme.onPrimary,
+                containerColor = MaterialTheme.colorScheme.primary,
                 shape = CircleShape
             ) {
                 Icon(
