@@ -10,7 +10,19 @@ import ru.nvgsoft.mynotes.domain.NotesRepository
 
 object TestNotesRepositoryImpl : NotesRepository {
 
-    private val notesListFlow = MutableStateFlow<List<Note>>(listOf())
+    private val testData = mutableListOf<Note>().apply {
+        repeat(10){
+            add(Note(
+                id = it,
+                title = "Title $it",
+                content = "Content $it",
+                updatedAt = System.currentTimeMillis(),
+                isPinned = false
+            ))
+        }
+    }
+
+    private val notesListFlow = MutableStateFlow<List<Note>>(testData)
 
     override suspend fun addNote(
         title: String,
