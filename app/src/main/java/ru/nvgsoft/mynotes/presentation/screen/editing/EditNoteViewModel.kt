@@ -1,21 +1,21 @@
 package ru.nvgsoft.mynotes.presentation.screen.editing
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.nvgsoft.mynotes.data.TestNotesRepositoryImpl
-import ru.nvgsoft.mynotes.domain.AddNoteUseCase
+import ru.nvgsoft.mynotes.data.NotesRepositoryImpl
 import ru.nvgsoft.mynotes.domain.DeleteNoteUseCase
 import ru.nvgsoft.mynotes.domain.EditNoteUseCase
 import ru.nvgsoft.mynotes.domain.GetNoteUseCase
 import ru.nvgsoft.mynotes.domain.Note
 
-class EditNoteViewModel(private val noteId: Int) : ViewModel() {
+class EditNoteViewModel(private val noteId: Int, context: Context) : ViewModel() {
 
-    private val repository = TestNotesRepositoryImpl
+    private val repository = NotesRepositoryImpl.getInstance(context)
     private val editNoteUseCase = EditNoteUseCase(repository)
     private val getNoteUseCase = GetNoteUseCase(repository)
     private val deleteNoteUseCase = DeleteNoteUseCase(repository)

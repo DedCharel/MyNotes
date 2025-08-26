@@ -1,5 +1,6 @@
 package ru.nvgsoft.mynotes.presentation.screen.editing
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -40,8 +42,9 @@ import ru.nvgsoft.mynotes.presentation.utils.DateFormatter
 fun EditNoteScreen(
     modifier: Modifier = Modifier,
     noteId: Int,
+    context: Context = LocalContext.current.applicationContext,
     viewModel: EditNoteViewModel = viewModel{
-        EditNoteViewModel(noteId)
+        EditNoteViewModel(noteId, context)
     },
     onFinished: () -> Unit
 ){
