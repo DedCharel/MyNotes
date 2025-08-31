@@ -1,6 +1,5 @@
 package ru.nvgsoft.mynotes.presentation.screen.editing
 
-import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,15 +24,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import ru.nvgsoft.mynotes.presentation.screen.creation.CreateNoteCommand
-import ru.nvgsoft.mynotes.presentation.screen.creation.CreateNoteState
-import ru.nvgsoft.mynotes.presentation.screen.creation.CreateNoteViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import ru.nvgsoft.mynotes.presentation.utils.DateFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,10 +36,11 @@ import ru.nvgsoft.mynotes.presentation.utils.DateFormatter
 fun EditNoteScreen(
     modifier: Modifier = Modifier,
     noteId: Int,
-    context: Context = LocalContext.current.applicationContext,
-    viewModel: EditNoteViewModel = viewModel{
-        EditNoteViewModel(noteId, context)
-    },
+    viewModel: EditNoteViewModel = hiltViewModel(
+        creationCallback = { factory: EditNoteViewModel.Factory ->
+            factory.create(noteId)
+        }
+    ),
     onFinished: () -> Unit
 ){
     val state = viewModel.state.collectAsState()

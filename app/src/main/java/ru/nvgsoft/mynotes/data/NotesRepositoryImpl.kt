@@ -1,17 +1,17 @@
 package ru.nvgsoft.mynotes.data
 
-import android.content.Context
+import android.annotation.SuppressLint
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.nvgsoft.mynotes.domain.Note
 import ru.nvgsoft.mynotes.domain.NotesRepository
-import ru.nvgsoft.mynotes.presentation.utils.DateFormatter
+import javax.inject.Inject
 
-class NotesRepositoryImpl private constructor(context: Context): NotesRepository {
+class NotesRepositoryImpl @Inject constructor(
+    private val notesDao: NotesDao
+): NotesRepository {
 
-    private val noteDatabase = NotesDatabase.getInstance(context)
-    private val noteDao = noteDatabase.notesDao()
-
+    @SuppressLint("SuspiciousIndentation")
     override suspend fun addNote(
         title: String,
         content: String,
@@ -25,48 +25,30 @@ class NotesRepositoryImpl private constructor(context: Context): NotesRepository
             updatedAt = updatedAt,
             isPinned = isPinned
         )
-            noteDao.addNote(note)
+            notesDao.addNote(note)
     }
 
     override suspend fun deleteNote(noteId: Int) {
-        noteDao.deleteNote(noteId)
+        notesDao.deleteNote(noteId)
     }
 
     override suspend fun editNote(note: Note) {
-        noteDao.addNote(note.toDbModel())
+        notesDao.addNote(note.toDbModel())
     }
 
     override fun getAllNotes(): Flow<List<Note>> {
-        return noteDao.getAllNotes().map { it.toEntities() }
+        return notesDao.getAllNotes().map { it.toEntities() }
     }
 
     override suspend fun getNote(noteId: Int): Note {
-        return noteDao.getNote(noteId).toEntity()
+        return notesDao.getNote(noteId).toEntity()
     }
 
     override fun searchNotes(query: String): Flow<List<Note>> {
-        return noteDao.searchNotes(query).map { it.toEntities() }
+        return notesDao.searchNotes(query).map { it.toEntities() }
     }
 
     override suspend fun switchPinnedStatus(noteId: Int) {
-        noteDao.switchPinnedStatus(noteId)
-    }
-
-    companion object {
-
-        private var instance: NotesRepositoryImpl? = null
-        private val LOCK = Any()
-
-        fun getInstance(context: Context): NotesRepositoryImpl {
-            instance?.let { return it }
-
-            synchronized(LOCK){
-                instance?.let { return it }
-
-                return NotesRepositoryImpl(context).also {
-                    instance = it
-                }
-            }
-        }
+        notesDao.switchPinnedStatus(noteId)
     }
 }

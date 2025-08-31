@@ -1,6 +1,8 @@
 package ru.nvgsoft.mynotes.domain
 
-class AddNoteUseCase(
+import javax.inject.Inject
+
+class AddNoteUseCase @Inject constructor(
     private val repository: NotesRepository
 ) {
 

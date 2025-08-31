@@ -1,8 +1,9 @@
 package ru.nvgsoft.mynotes.presentation.screen.notes
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,21 +12,19 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.nvgsoft.mynotes.data.NotesRepositoryImpl
 import ru.nvgsoft.mynotes.domain.GetAllNotesUseCase
 import ru.nvgsoft.mynotes.domain.Note
 import ru.nvgsoft.mynotes.domain.SearchNotesUseCase
 import ru.nvgsoft.mynotes.domain.SwitchPinnedStatusUseCase
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class NotesViewModel(context: Context) : ViewModel() {
+@HiltViewModel
+class NotesViewModel @Inject constructor(
+    private val getAllNotesUseCase: GetAllNotesUseCase,
+    private val searchNotesUseCase: SearchNotesUseCase,
+    private val switchPinnedStatusUseCase: SwitchPinnedStatusUseCase
+) : ViewModel() {
 
-    private val repository = NotesRepositoryImpl.getInstance(context)
-
-
-    private val getAllNotesUseCase = GetAllNotesUseCase(repository)
-    private val searchNotesUseCase = SearchNotesUseCase(repository)
-    private val switchPinnedStatusUseCase = SwitchPinnedStatusUseCase(repository)
 
     private val query = MutableStateFlow("")
 
@@ -37,21 +36,20 @@ class NotesViewModel(context: Context) : ViewModel() {
             .onEach { input ->
                 _state.update { it.copy(query = input) }
             }
-            .flatMapLatest {input ->
+            .flatMapLatest { input ->
                 if (input.isBlank()) {
                     getAllNotesUseCase()
                 } else {
                     searchNotesUseCase(input)
                 }
             }
-            .onEach {notes ->
+            .onEach { notes ->
                 val pinnedNotes = notes.filter { it.isPinned }
                 val otherNotes = notes.filter { !it.isPinned }
                 _state.update { it.copy(pinnedNotes = pinnedNotes, otherNotes = otherNotes) }
             }
             .launchIn(viewModelScope)
     }
-
 
 
     fun processCommand(command: NotesCommand) {

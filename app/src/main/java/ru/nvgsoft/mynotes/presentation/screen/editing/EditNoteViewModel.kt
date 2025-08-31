@@ -1,24 +1,28 @@
 package ru.nvgsoft.mynotes.presentation.screen.editing
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.nvgsoft.mynotes.data.NotesRepositoryImpl
 import ru.nvgsoft.mynotes.domain.DeleteNoteUseCase
 import ru.nvgsoft.mynotes.domain.EditNoteUseCase
 import ru.nvgsoft.mynotes.domain.GetNoteUseCase
 import ru.nvgsoft.mynotes.domain.Note
 
-class EditNoteViewModel(private val noteId: Int, context: Context) : ViewModel() {
+@HiltViewModel(assistedFactory = EditNoteViewModel.Factory::class)
+class EditNoteViewModel @AssistedInject constructor(
+    private val editNoteUseCase: EditNoteUseCase,
+    private val getNoteUseCase: GetNoteUseCase,
+    private val deleteNoteUseCase: DeleteNoteUseCase,
+    @Assisted("noteId") private val noteId: Int
+) : ViewModel() {
 
-    private val repository = NotesRepositoryImpl.getInstance(context)
-    private val editNoteUseCase = EditNoteUseCase(repository)
-    private val getNoteUseCase = GetNoteUseCase(repository)
-    private val deleteNoteUseCase = DeleteNoteUseCase(repository)
 
     private val _state = MutableStateFlow<EditNoteState>(EditNoteState.Initial)
     val state = _state.asStateFlow()
@@ -41,7 +45,7 @@ class EditNoteViewModel(private val noteId: Int, context: Context) : ViewModel()
 
             is EditNoteCommand.InputContent -> {
                 _state.update { previousState ->
-                    if (previousState is EditNoteState.Editing){
+                    if (previousState is EditNoteState.Editing) {
                         val newNote = previousState.note.copy(content = command.content)
                         previousState.copy(note = newNote)
                     } else {
@@ -52,7 +56,7 @@ class EditNoteViewModel(private val noteId: Int, context: Context) : ViewModel()
 
             is EditNoteCommand.InputTitle -> {
                 _state.update { previousState ->
-                    if (previousState is EditNoteState.Editing){
+                    if (previousState is EditNoteState.Editing) {
                         val newNote = previousState.note.copy(title = command.title)
                         previousState.copy(note = newNote)
                     } else {
@@ -77,19 +81,26 @@ class EditNoteViewModel(private val noteId: Int, context: Context) : ViewModel()
             }
 
             EditNoteCommand.Delete -> {
-            viewModelScope.launch {
-                _state.update {previousState ->
-                    if (previousState is EditNoteState.Editing){
-                        val note = previousState.note
-                        deleteNoteUseCase(note.id)
-                        EditNoteState.Finished
-                    } else {
-                        previousState
+                viewModelScope.launch {
+                    _state.update { previousState ->
+                        if (previousState is EditNoteState.Editing) {
+                            val note = previousState.note
+                            deleteNoteUseCase(note.id)
+                            EditNoteState.Finished
+                        } else {
+                            previousState
+                        }
                     }
                 }
             }
-            }
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted("noteId") noteId: Int
+        ): EditNoteViewModel
     }
 }
 
@@ -103,12 +114,12 @@ sealed interface EditNoteCommand {
 
     data object Back : EditNoteCommand
 
-    data object Delete: EditNoteCommand
+    data object Delete : EditNoteCommand
 }
 
 sealed interface EditNoteState {
 
-    data object Initial: EditNoteState
+    data object Initial : EditNoteState
 
     data class Editing(
         val note: Note
