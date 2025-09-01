@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.nvgsoft.mynotes.domain.ContentItem
 import ru.nvgsoft.mynotes.domain.DeleteNoteUseCase
 import ru.nvgsoft.mynotes.domain.EditNoteUseCase
 import ru.nvgsoft.mynotes.domain.GetNoteUseCase
@@ -46,7 +47,8 @@ class EditNoteViewModel @AssistedInject constructor(
             is EditNoteCommand.InputContent -> {
                 _state.update { previousState ->
                     if (previousState is EditNoteState.Editing) {
-                        val newNote = previousState.note.copy(content = command.content)
+                        val newContent = ContentItem.Text(content = command.content)
+                        val newNote = previousState.note.copy(content = listOf(newContent))
                         previousState.copy(note = newNote)
                     } else {
                         previousState
@@ -125,7 +127,18 @@ sealed interface EditNoteState {
         val note: Note
     ) : EditNoteState {
         val isSaveEnabled: Boolean
-            get() = note.title.isNotBlank() && note.content.isNotBlank()
+            get() {
+                return when {
+                    note.title.isBlank() -> false
+                    note.content.isEmpty() -> false
+                    else -> {
+                        note.content.any{contentItem ->
+                            contentItem !is ContentItem.Text || contentItem.content.isNotBlank()
+                        }
+                    }
+                }
+            }
+
     }
 
     data object Finished : EditNoteState

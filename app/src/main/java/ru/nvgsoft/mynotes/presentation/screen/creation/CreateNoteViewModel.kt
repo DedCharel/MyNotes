@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.nvgsoft.mynotes.domain.AddNoteUseCase
+import ru.nvgsoft.mynotes.domain.ContentItem
 import javax.inject.Inject
 
 @HiltViewModel
@@ -55,8 +56,8 @@ class CreateNoteViewModel @Inject constructor(
                     _state.update { previousState ->
                         if (previousState is CreateNoteState.Creation) {
                             val title = previousState.title
-                            val content = previousState.content
-                            addNoteUseCase(title = title, content = content)
+                            val newContent = ContentItem.Text(content = previousState.content)
+                            addNoteUseCase(title = title, content = listOf(newContent))
                             CreateNoteState.Finished
                         } else {
                             previousState
