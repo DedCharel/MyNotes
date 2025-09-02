@@ -178,7 +178,7 @@ private fun TextContent(
 
 ){
     TextField(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         value = text,
         onValueChange = {
