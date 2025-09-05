@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.nvgsoft.mynotes.domain.AddNoteUseCase
 import ru.nvgsoft.mynotes.domain.ContentItem
+import ru.nvgsoft.mynotes.domain.ContentItem.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -84,8 +85,8 @@ class CreateNoteViewModel @Inject constructor(
                             if (lastItem is ContentItem.Text && lastItem.content.isBlank()){
                                 removeAt(lastIndex)
                             }
-                            add(ContentItem.Image(url = command.uri.toString()))
-                            add(ContentItem.Text(""))
+                            add(Image(url = command.uri.toString()))
+                            add(Text(""))
                         }.let {
                             previousState.copy(content = it)
                         }
@@ -94,6 +95,20 @@ class CreateNoteViewModel @Inject constructor(
                     }
                 }
             }
+
+            is CreateNoteCommand.DeleteImage ->
+                _state.update {previousState ->
+                    if (previousState is CreateNoteState.Creation){
+                        previousState.content.toMutableList().apply {
+                            removeAt(command.index)
+                        }.let {
+                            previousState.copy(content = it)
+                        }
+                    } else {
+                        previousState
+                    }
+
+                }
         }
     }
 }
@@ -105,6 +120,8 @@ sealed interface CreateNoteCommand {
     data class InputContent(val content: String, val index: Int) : CreateNoteCommand
 
     data class AddImage(val uri: Uri): CreateNoteCommand
+
+    data class DeleteImage(val index: Int): CreateNoteCommand
 
     data object Save : CreateNoteCommand
 
