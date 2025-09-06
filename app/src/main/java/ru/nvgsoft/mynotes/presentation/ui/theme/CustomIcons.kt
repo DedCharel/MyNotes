@@ -8,8 +8,7 @@ import androidx.compose.ui.unit.dp
 object CustomIcons {
 
 
-
-    val Add_photo: ImageVector
+    val AddPhoto: ImageVector
         get() {
             if (_Add_photo_alternate != null) return _Add_photo_alternate!!
 
@@ -69,6 +68,7 @@ object CustomIcons {
         }
 
     private var _Add_photo_alternate: ImageVector? = null
+
 
 
 }
