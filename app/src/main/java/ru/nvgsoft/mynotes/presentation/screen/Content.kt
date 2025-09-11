@@ -22,10 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import ru.nvgsoft.mynotes.R
 import ru.nvgsoft.mynotes.domain.ContentItem
 
 @Composable
@@ -107,21 +109,23 @@ fun ImageContent(
         modifier = modifier
     ){
         AsyncImage(
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier
+                .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp)),
             model = imageUrl,
-            contentDescription = "Image from gallery",
+            contentDescription = stringResource(R.string.image_from_gallery),
             contentScale = ContentScale.Fit
         )
         Icon(
-            modifier = Modifier.align(Alignment.TopEnd)
+            modifier = Modifier
+                .align(Alignment.TopEnd)
                 .padding(8.dp)
                 .size(24.dp)
-                .clickable{
+                .clickable {
                     onDeleteImageClick()
                 },
             imageVector = Icons.Default.Close,
-            contentDescription = "Remove image",
+            contentDescription = stringResource(R.string.remove_image),
             tint = MaterialTheme.colorScheme.onSurface
         )
     }
@@ -151,7 +155,7 @@ fun TextContent(
         ),
         placeholder = {
             Text(
-                text = "Note something down",
+                text = stringResource(R.string.note_something_down),
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
             )
