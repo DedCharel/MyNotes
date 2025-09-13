@@ -94,4 +94,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
+    dependencies {
+        implementation(libs.androidx.core.splashscreen)
+    }
+
 }
