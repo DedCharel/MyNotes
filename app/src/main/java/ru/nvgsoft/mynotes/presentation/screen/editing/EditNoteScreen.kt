@@ -78,15 +78,6 @@ fun EditNoteScreen(
                         actions = {
                             Icon(
                                 modifier = Modifier
-                                    .padding(end = 16.dp)
-                                    .clickable {
-                                        viewModel.processCommand(EditNoteCommand.Delete)
-                                    },
-                                imageVector = Icons.Outlined.Delete,
-                                contentDescription = stringResource(R.string.delete_note)
-                            )
-                            Icon(
-                                modifier = Modifier
                                     .clickable {
                                         imagePicker.launch("image/*")
                                     }
@@ -94,6 +85,15 @@ fun EditNoteScreen(
                                 imageVector = CustomIcons.AddPhoto,
                                 contentDescription = stringResource(R.string.add_photo_from_gallery),
                                 tint = MaterialTheme.colorScheme.onSurface
+                            )
+                            Icon(
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                                    .clickable {
+                                        viewModel.processCommand(EditNoteCommand.Delete)
+                                    },
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = stringResource(R.string.delete_note)
                             )
                         },
                         navigationIcon = {

@@ -5,7 +5,7 @@ import androidx.room.Relation
 
 data class NoteWithContentDbModel(
     @Embedded
-    val note: NoteDbModel,
+    val noteDbModel: NoteDbModel,
     @Relation(
         parentColumn = "id",
         entityColumn = "noteId"

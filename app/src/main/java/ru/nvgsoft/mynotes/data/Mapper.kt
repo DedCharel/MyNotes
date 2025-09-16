@@ -5,23 +5,37 @@ import ru.nvgsoft.mynotes.domain.ContentItem
 import ru.nvgsoft.mynotes.domain.Note
 
 fun Note.toDbModel(): NoteDbModel {
-    val contentAsSting = Json.encodeToString(content.toContentItemDbModels())
-    return NoteDbModel(id, title, contentAsSting, updatedAt, isPinned)
+    return NoteDbModel(id, title, updatedAt, isPinned)
 }
 
-fun NoteDbModel.toEntity(): Note {
-    val contentItemDbModel = Json.decodeFromString<List<ContentItemDbModel>>(content)
-    return Note(id, title,contentItemDbModel.toContentItems(), updatedAt, isPinned)
+fun NoteWithContentDbModel.toEntity(): Note {
+    return Note(
+        id = noteDbModel.id,
+        title = noteDbModel.title,
+        content = content.toContentItems(),
+        updatedAt = noteDbModel.updatedAt,
+        isPinned = noteDbModel.isPinned
+    )
 }
 
-fun List<ContentItem>.toContentItemDbModels(): List<ContentItemDbModel>{
-    return map { contentItem ->
+fun List<ContentItem>.toContentItemDbModels(noteId: Int): List<ContentItemDbModel>{
+    return mapIndexed { index, contentItem ->
         when(contentItem){
             is ContentItem.Image -> {
-                ContentItemDbModel.Image(url = contentItem.url)
+                ContentItemDbModel(
+                    noteId = noteId,
+                    contentType = ContentType.IMAGE,
+                    content = contentItem.url,
+                    order = index
+                )
             }
             is ContentItem.Text -> {
-                ContentItemDbModel.Text(content = contentItem.content)
+                ContentItemDbModel(
+                    noteId = noteId,
+                    contentType = ContentType.TEXT,
+                    content = contentItem.content,
+                    order = index
+                )
             }
         }
     }
@@ -29,17 +43,17 @@ fun List<ContentItem>.toContentItemDbModels(): List<ContentItemDbModel>{
 
 fun List<ContentItemDbModel>.toContentItems(): List<ContentItem>{
     return map { contentItem ->
-        when(contentItem){
-            is ContentItemDbModel.Image -> {
-                ContentItem.Image(url = contentItem.url)
-            }
-            is ContentItemDbModel.Text -> {
+        when(contentItem.contentType){
+            ContentType.TEXT -> {
                 ContentItem.Text(content = contentItem.content)
+            }
+            ContentType.IMAGE -> {
+                ContentItem.Image(url = contentItem.content)
             }
         }
     }
 }
 
-fun List<NoteDbModel>.toEntities(): List<Note> {
+fun List<NoteWithContentDbModel>.toEntities(): List<Note> {
     return map {it.toEntity()}
 }
